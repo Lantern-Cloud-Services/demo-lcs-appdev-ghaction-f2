@@ -4,28 +4,36 @@
 name: Build and deploy dotnet core app to Azure Function App - demo-lcs-appdev-ghaction-f2
 
 on:
-  push:
-    branches:
-      - main
+  #push:
+  #  branches:
+  #    - main
   workflow_dispatch:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '6.0.x' # set this to the dotnet version to use
+  TEST: 'true'
 
 jobs:
   build-and-deploy:
     runs-on: windows-latest
     steps:
+      - name: 'Run a script'
+        if: ${{ env.TEST == 'true' }}
+        run: echo 'This job runs only if TEST is true'
+
       - name: 'Checkout GitHub Action'
+        if: ${{ env.TEST != 'true' }}
         uses: actions/checkout@v2
 
       - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        if: ${{ env.TEST != 'true' }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: 'Resolve Project Dependencies Using Dotnet'
+        if: ${{ env.TEST != 'true' }}
         shell: pwsh
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
@@ -33,6 +41,7 @@ jobs:
           popd
 
       - name: 'Run Azure Functions Action'
+        if: ${{ env.TEST != 'true' }}
         uses: Azure/functions-action@v1
         id: fa
         with:
