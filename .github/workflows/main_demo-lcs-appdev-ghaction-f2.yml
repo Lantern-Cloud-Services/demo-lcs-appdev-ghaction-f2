@@ -16,6 +16,9 @@ env:
 
 jobs:
   build-and-deploy:
+    environment:
+      name: Pass review
+
     runs-on: windows-latest
     steps:
       - name: 'Run a script'
